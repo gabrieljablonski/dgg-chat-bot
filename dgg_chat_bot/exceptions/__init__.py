@@ -3,5 +3,6 @@ from ._exceptions import (
     CommandDescriptionTooLongError,
     DuplicateCommandError,
     InvalidCommandError,
+    InvalidCommandArgumentsError,
     UnknownCommandError,
 )

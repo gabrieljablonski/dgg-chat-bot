@@ -1,3 +1,4 @@
+import logging
 from typing import Union, Callable, Dict, Set, AnyStr
 from dgg_chat.messages import ChatMessage, Whisper, EventTypes
 
@@ -6,9 +7,15 @@ from .exceptions import (
     DuplicateCommandError,
     InvalidMessageError, 
     InvalidCommandError,
+    InvalidCommandArgumentsError,
     UnknownCommandError,
 )
-from ._utils import get_arity, sanitize_docs, last_argument_is_of_type
+from ._utils import (
+    get_arity, 
+    sanitize_docs, 
+    call_with_typed_args,
+    last_argument_is_of_type,
+)
 
 
 Message = Union[ChatMessage, Whisper]
@@ -17,9 +24,10 @@ Message = Union[ChatMessage, Whisper]
 class Handler:
     MAX_DESCRIPTION_LENGTH = 400
 
-    def __init__(self, f: Callable):
+    def __init__(self, f: Callable, optional_args=False):
         self._f = f
         self.description = f.__doc__ or 'No description.'
+        self.optional_args = optional_args
 
         self.description = sanitize_docs(self.description)
         if len(self.description) > self.MAX_DESCRIPTION_LENGTH:
@@ -51,7 +59,12 @@ class Handler:
         if exp_raw:
             args.append(raw_message)
 
-        return self._f(*args)
+        try:
+            return call_with_typed_args(
+                self._f, *args, optional_args=self.optional_args
+            )
+        except ValueError:
+            raise InvalidCommandArgumentsError(args)
 
     @property
     def arity(self):
@@ -96,6 +109,7 @@ class Commands:
         self._commands: Dict[Keyword, Command] = {}
         self._on_regular_message: Callable = None
         self._on_unknown_command: Callable = None
+        self._on_invalid_arguments: Callable = None
 
     @property
     def on_regular_message(self):
@@ -116,6 +130,15 @@ class Commands:
         self._on_unknown_command = f
 
     @property
+    def on_invalid_arguments(self):
+        return self._on_invalid_arguments
+
+    @on_invalid_arguments.setter
+    def on_invalid_arguments(self, f):
+        # just in case restrictions are needed in the future
+        self._on_invalid_arguments = f
+
+    @property
     def all_aliases(self):
         aliases = []
         for keyword, command in self._commands.items():
@@ -130,7 +153,11 @@ class Commands:
             if command.is_alias(alias):
                 return command
 
-    def add(self, f, keyword, *aliases, override=False):
+    def add(
+        self, f, keyword, *aliases, 
+        override=False,
+        optional_args=False,
+    ):
         for alias in aliases:
             if self.get_root(alias):
                 raise DuplicateCommandError(alias)
@@ -138,7 +165,7 @@ class Commands:
         if self.get_root(keyword) and not override:
             raise DuplicateCommandError(keyword)
 
-        handler = Handler(f)
+        handler = Handler(f, optional_args)
         command = Command(handler, keyword, *aliases)
         self._commands[keyword] = command
 
@@ -156,4 +183,9 @@ class Commands:
             if self._on_unknown_command:
                 return self._on_unknown_command(keyword)
             raise UnknownCommandError(command)
-        command.handler(message, *args)
+
+        try:
+            command.handler(message, *args)
+        except InvalidCommandArgumentsError:
+            logging.debug(f"invalid arguments: {command}, {args}")
+            self._on_invalid_arguments(command, *args)
