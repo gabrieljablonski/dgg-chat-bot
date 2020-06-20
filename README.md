@@ -1,6 +1,6 @@
 # DGG Chat Bot
 
-A framework for building chat bots for the destiny.gg chat. It allows you to register 
+A framework for building chat bots for the [destiny.gg](https://destiny.gg) chat. It allows you to register 
 commands for when a user whispers you, so you can then reply with something useful.
 Built with the [`dgg-chat`](https://github.com/gabrieljablonski/dgg-chat) package.
 
@@ -193,6 +193,9 @@ As for the other three handlers, use the respective decorators: `on_invalid_argu
 As shown in the previous examples, the `reply()` function can be used to reply to the user who sent
 the command being processed. There's also `reply_multine()`, which does what the name suggests.
 Expect a small delay (~200-500 ms) between messages, since they'd get throttled otherwise.
+
+Replying will be disabled by default. Follow down the source code to figure out how to enable it.
+This is just to make sure you know what you're doing before allowing message sending.
 
 ## Authentication
 
