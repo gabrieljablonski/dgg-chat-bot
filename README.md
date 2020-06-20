@@ -1,8 +1,8 @@
 # DGG Chat Bot
 
-A framework for building chat bots for the destiny.gg chat. Built with the 
-[`dgg-chat`](https://github.com/gabrieljablonski/dgg-chat) package. The framework 
-allows you to register commands for when a user whispers you, so you can then reply with something useful.
+A framework for building chat bots for the destiny.gg chat. It allows you to register 
+commands for when a user whispers you, so you can then reply with something useful.
+Built with the [`dgg-chat`](https://github.com/gabrieljablonski/dgg-chat) package.
 
 ## Installing
 
@@ -32,7 +32,7 @@ The `DGGChatBot` class runs the main event loop. It parses messages users sent t
 and invokes any functions registered to that command. Registering a command can be done with the 
 `DGGChatBot().on_command()` decorator.
 
-As it is with the `dgg_chat` package, all handlers are called synchronously, that is, a handler 
+As it is with the `dgg-chat` package, all handlers are called synchronously, that is, a handler 
 will only be called after the previous one finished its work. If you want to do time intensive tasks,
 the asynchronous aspect has to be done manually. Native asynchronous support might be implemented in the future.
 
@@ -40,9 +40,9 @@ A more complete example can be found in the [`example.py`](./example.py) file.
 
 ## Registering Commands
 
-When using the `on_command()` decorator, the first argument will be the keyword associated
-with that command, followed by any number of aliases. There's also the `override` and `optional_args`, 
-arguments explained further on.
+When using the `on_command()` decorator, the first argument will be the keyword associated with 
+that command, followed by any number of aliases. There's also the `override` and `optional_args`, 
+arguments explained later on.
 
 It is enforced that the same alias cannot be used for multiple commands. Unless you set 
 `override` to `True`, keywords also cannot be reused. `override` is specially useful to 
@@ -72,13 +72,15 @@ def on_command(arg1, arg2):
     # arg1 = 'abc', arg2 = '123'
 ```
 
-In case the command is invoked with more arguments than defined, all exceeding words
-are grouped as the last argument. In case arguments sent are less than expected, and
-`optional_args` is `True` (default value), missing arguments are received as empty 
-(`''` or `0` for number arguments, as explained further on). If `optional_args` is set
-to `False`, `InvalidCommandArgumentsError` exception is raised before the handler is 
-called, and the `on_invalid_arguments()` special handler is called, which is explained 
-further on. Examples:
+In case the command is invoked with more arguments than defined, all exceeding words are grouped as the last argument. 
+
+In case arguments received are less than expected, and `optional_args` is `True` (default value), 
+missing arguments are received as empty (`''` or `0` for numeric arguments, as explained later). 
+
+If `optional_args` is set to `False`, `InvalidCommandArgumentsError` exception is raised, 
+and the `on_invalid_arguments()` special handler is called instead, which is explained further on. 
+
+Examples:
 
 ```python
 @bot.on_command('command')
@@ -97,11 +99,15 @@ def on_other_command(arg1, arg2):
 
 #### Typed Arguments
 
-You can also set arguments to expect specific types using [annotations](https://realpython.com/lessons/annotations/), 
+Arguments can be set to expect specific types using [annotations](https://realpython.com/lessons/annotations/), 
 specially useful when you want an argument to be an `int` or `float` (arguments are `str` by default). 
+
 If the command is invoked using arguments of wrong type, `InvalidCommandArgumentsError` is raised and 
-`on_invalid_arguments()` is called. The `Optional` annotation from the `typing` package can be used in conjunction
-with `optional_args` to selectively enforce certain arguments. Default values can also be set as you'd expect.
+`on_invalid_arguments()` is called. 
+
+The `Optional` annotation from the `typing` package can be used in conjunction with `optional_args` to 
+selectively enforce certain arguments. Default values can also be set as you'd expect.
+
 Examples:
 
 ```python
@@ -129,7 +135,7 @@ def optional_command(required, optional: Optional[int] = 5):
 
 The raw message received can also be retrieved by annotating the last argument with the
 `Message` type. This message will be of type `Whisper` as defined in the 
-[`dgg_chat`](https://github.com/gabrieljablonski/dgg-chat/blob/master/dgg_chat/messages/_messages.py#L100) package.
+[`dgg-chat`](https://github.com/gabrieljablonski/dgg-chat/blob/master/dgg_chat/messages/_messages.py#L100) package.
 The available attributes are: 
  - `user`: Of type [`ChatUser`](https://github.com/gabrieljablonski/dgg-chat/blob/master/dgg_chat/messages/_messages.py#L6), contains the user's `nick` and their chat `features`.
  - `message_id`: Message id as defined in the chat backend, rarely useful.
@@ -184,12 +190,16 @@ As shown in the previous examples, the `reply()` function can be used to reply t
 the command being processed. There's also `reply_multine()`, which does what the name suggests.
 Expect a small delay (~200-500 ms) between messages, since they'd get throttled otherwise.
 
+## Authentication
+
+Check the [authentication section](https://github.com/gabrieljablonski/dgg-chat#authentication) in the `dgg-chat` package description.
+
 ## Extra Features
 
-This framework being built on top of the `dgg_chat` package, its functionality is exposed through the `chat`
+This framework being built on top of the `dgg-chat` package, its functionality is exposed through the `chat`
 attribute of the `DGGChatBot` class. So you can also use decorators to handle different events in chat,
 like with `chat.on_chat_message()` and `chat.on_user_joined()`, as well as get access to the `chat.send_whisper()`
 method, specially useful when you need to send a whisper not as an immediate reply (e.g.: a command that does
 something for a longer amount of time and sends a message when it is done).
 
-For more details, go check out the [`dgg_chat` documentation](https://github.com/gabrieljablonski/dgg-chat).
+For more details, go check out the [`dgg-chat` documentation](https://github.com/gabrieljablonski/dgg-chat).
