@@ -196,7 +196,7 @@ As for the other handlers, use the respective decorators: `on_invalid_arguments(
 
 Also, you can user the `before_commands()` and `after_commands()` to define handlers that
 are called before and after every command. The expected signature for these functions
-can be seen in the [`example.py`](./example.py#133) file.
+can be seen in the [`example.py`](./example.py#L133) file.
 
 ## Replying To Messages
 
