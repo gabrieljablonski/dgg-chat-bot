@@ -89,9 +89,10 @@ class DGGChatBot:
             self.reply(msg)
 
         @self.on_invalid_arguments
-        def on_invalid_arguments(command, *args):
+        def on_invalid_arguments(command, error_message=''):
             keyword = command.keyword
-            msg = f"""I don't think this you how you use that 🤔. Try "{self.command_prefix}help {keyword}" for more info."""
+            error_message = f" Error message: {error_message}." if error_message else ''
+            msg = f"""I don't think this you how you use that 🤔.{error_message} Try "{self.command_prefix}help {keyword}" for more info."""
             self.reply(msg)
 
     def _setup_chat_handlers(self):

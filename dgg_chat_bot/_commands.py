@@ -64,7 +64,7 @@ class Handler:
                 self._f, *args, optional_args=self.optional_args
             )
         except ValueError:
-            raise InvalidCommandArgumentsError(args)
+            raise InvalidCommandArgumentsError('invalid arguments')
 
     @property
     def arity(self):
@@ -186,6 +186,6 @@ class Commands:
 
         try:
             command.handler(message, *args)
-        except InvalidCommandArgumentsError:
+        except InvalidCommandArgumentsError as e:
             logging.debug(f"invalid arguments: {command}, {args}")
-            self._on_invalid_arguments(command, *args)
+            self._on_invalid_arguments(command, str(e))

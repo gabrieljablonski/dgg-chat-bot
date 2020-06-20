@@ -102,15 +102,17 @@ def roll(expr):
     """
     match = findall(r'(\d+)d(\d+)([+-]\d+)?', expr)
     if not match:
-        raise InvalidCommandArgumentsError(expr)
+        raise InvalidCommandArgumentsError('failed to match expression')
 
     n, p, b = match[0]
     try:
         n, p, b = int(n), int(p), int(b or 0)
-        if 0 > n > 20 or p <= 0:
-            raise ValueError
     except ValueError:
-        raise InvalidCommandArgumentsError(expr)
+        # this shouldn't really ever happen
+        raise InvalidCommandArgumentsError('something weird happened when parsing the expression')
+
+    if 0 > n > 20 or p <= 0:
+        raise InvalidCommandArgumentsError('<N> must be between 1 and 20.')
 
     rolls = [
         randint(1, p)
