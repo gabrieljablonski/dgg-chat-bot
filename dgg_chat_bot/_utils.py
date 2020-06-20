@@ -1,3 +1,4 @@
+from sys import maxsize
 from typing import Callable, Type, Union, _Final
 from inspect import cleandoc, signature
 from functools import wraps
@@ -60,11 +61,13 @@ def call_with_typed_args(f, *args, optional_args=False):
                     # invalid arg, ex: `int('1.0')`
                     raise e
                 if t in (int, float):
-                    arg = 0
-        if not arg:
+                    arg = maxsize
+        if arg == '' or arg == maxsize:
             if not optional:
                 raise ValueError
             if param.default is not sig.empty:
                 arg = param.default
+            elif arg == maxsize:
+                arg = 0
         coerced.append(arg)
     return f(*coerced)
