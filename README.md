@@ -29,7 +29,7 @@ bot.run_forever()
 ## How To Use
 
 The `DGGChatBot` class runs the main event loop. It parses messages users sent to you for a command 
-and invokes any functions registered to that command. Registering a command can be done with the 
+and invokes any functions registered. Registering a function to a command can be done with the 
 `DGGChatBot().on_command()` decorator.
 
 As it is with the `dgg-chat` package, all handlers are called synchronously, that is, a handler 
@@ -41,12 +41,12 @@ A more complete example can be found in the [`example.py`](./example.py) file.
 ## Registering Commands
 
 When using the `on_command()` decorator, the first argument will be the keyword associated with 
-that command, followed by any number of aliases. There's also the `override` and `optional_args`, 
+that command, followed by any number of aliases. There's also `override` and `optional_args`, 
 arguments explained later on.
 
 It is enforced that the same alias cannot be used for multiple commands. Unless you set 
 `override` to `True`, keywords also cannot be reused. `override` is specially useful to 
-set your own `help` command, in case you don't like the [default one](./dgg_chat_bot/_dgg_chat_bot.py#L56).
+define your own `help` command, in case you don't like the [default one](./dgg_chat_bot/_dgg_chat_bot.py#L56).
 
 ```python
 @bot.on_command('command', 'alias1', 'alias2')
@@ -152,6 +152,8 @@ def command(arg1, arg2, message: Message):
     print(message.user.nick)
 ```
 
+**Obs.: If used, the `Message` argument HAS to be set as the last one.**
+
 #### Command Description
 
 One other very important aspect of implementing a command handler is the description.
@@ -175,13 +177,15 @@ message along with other information, and messages have a size limit of 512 char
 
 ## Special Handlers
 
-There are three scenarios worth mentioning: the `help` command, a command was invoked with invalid arguments,
-an unknown command was invoked, and a message which didn't start with the command prefix ("!" by default) 
+There are three scenarios worth mentioning: the `help` command; a command with invalid arguments was invoked;
+an unknown command was invoked; and a message which didn't start with the command prefix ("!" by default) 
 was received. All of them have default implementations ([which can be reviewed here](./dgg_chat_bot/_dgg_chat_bot.py#L56)), 
 so implementing them is not necessary.
 
 As [described before](#registering-commands), use the `override` option of the `on_command()` decorator to 
-implement a custom `help` command. As for the other three handlers, use the respective decorators: `on_invalid_arguments()`,
+implement a custom `help` command. 
+
+As for the other three handlers, use the respective decorators: `on_invalid_arguments()`,
 `on_unknown_command()`, and `on_generic_message()`.
 
 ## Replying To Messages
@@ -198,8 +202,10 @@ Check the [authentication section](https://github.com/gabrieljablonski/dgg-chat#
 
 This framework being built on top of the `dgg-chat` package, its functionality is exposed through the `chat`
 attribute of the `DGGChatBot` class. So you can also use decorators to handle different events in chat,
-like with `chat.on_chat_message()` and `chat.on_user_joined()`, as well as get access to the `chat.send_whisper()`
-method, specially useful when you need to send a whisper not as an immediate reply (e.g.: a command that does
-something for a longer amount of time and sends a message when it is done).
+like with `chat.on_chat_message()` and `chat.on_user_joined()`.
+
+The `chat.send_whisper()` method is also available, which is specially useful when you need
+to send a whisper not as an immediate reply (e.g.: a command that does something for a longer 
+amount of time and sends a message when it is done).
 
 For more details, go check out the [`dgg-chat` documentation](https://github.com/gabrieljablonski/dgg-chat).
