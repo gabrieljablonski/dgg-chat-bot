@@ -54,41 +54,44 @@ class DGGChatBot:
     def _setup_default_commands(self):
         @self.on_command('help', 'h', 'commands', optional_args=True)
         def on_help(cmd):
-            """
-            The command you're using! 
-            Use it to get info about available commands.
-            Examples: "!help", "!help <command>".
-            """
+            """documentation set below"""
 
             if cmd:
                 if not (command := self._commands.get_root(cmd)):
                     return self.reply('The command `{cmd}` was not found.')
                 aliases = ', '.join(enclose(command.aliases, '"')) or 'none'
                 desc = command.handler.description
-                msg = f'"!{command.keyword}" (aliases: {aliases}) -> {desc}'
+                msg = f'"{self.command_prefix}{command.keyword}" (aliases: {aliases}) -> {desc}'
                 return self.reply(msg)
 
             commands = ', '.join(enclose(self._commands.all_aliases, '"'))
             if not commands:
                 msg = 'No commands are available ☹.'
                 return self.reply(msg)
-            msg = f'Available commands: {commands}. For more info about a specific command, try "!help <command>". {self.extra_help}'
+            msg = f'Available commands: {commands}. For more info about a specific command, try "{self.command_prefix}help <command>". {self.extra_help}'
             return self.reply(msg)
+
+        # setting manually since formatting is needed
+        on_help.__doc__ = f"""
+        The command you're using! 
+        Use it to get info about available commands.
+        Examples: "{self.command_prefix}help", "{self.command_prefix}help <command>".
+        """
 
         @self.on_unknown_command
         def on_unknown_command(command):
-            msg = """Sorry, I don't know that one 🤔. Try "!help"."""
+            msg = """Sorry, I don't know that one 🤔. Try "{self.command_prefix}help"."""
             self.reply(msg)
 
         @self.on_regular_message
         def on_regular_message(message: Message):
-            msg = f"""Hey, {message.user.nick}! I'm a bot 🤖 *beep* *boop*. To check what I can do, try "!help"."""
+            msg = f"""Hey, {message.user.nick}! I'm a bot 🤖 *beep* *boop*. To check what I can do, try "{self.command_prefix}help"."""
             self.reply(msg)
 
         @self.on_invalid_arguments
         def on_invalid_arguments(command, *args):
             keyword = command.keyword
-            msg = f"""I don't think this you how you use that 🤔. Try "!help {keyword}" for more info."""
+            msg = f"""I don't think this you how you use that 🤔. Try "{self.command_prefix}help {keyword}" for more info."""
             self.reply(msg)
 
     def _setup_chat_handlers(self):
