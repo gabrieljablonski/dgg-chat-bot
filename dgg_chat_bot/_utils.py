@@ -44,7 +44,7 @@ def call_with_typed_args(f, *args, optional_args=False):
         optional = optional_args
         if param.annotation is not sig.empty:
             t = param.annotation
-            if hasattr(t, '__origin__') and t.__origin__ is Union and t.__args__[-1] is None:
+            if hasattr(t, '__origin__') and t.__origin__ is Union and t.__args__[-1] is type(None):
                 # argument is of type `Optional[type]`
                 t = t.__args__[0]
                 optional = True
