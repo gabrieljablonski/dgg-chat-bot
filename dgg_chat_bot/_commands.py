@@ -111,6 +111,8 @@ class Commands:
         self._on_unknown_command: Callable = None
         self._on_invalid_arguments: Callable = None
         self._on_fail: Callable = None
+        self._before_commands: Set[Callable] = set()
+        self._after_commands: Set[Callable] = set()
 
     @property
     def on_regular_message(self):
@@ -163,6 +165,14 @@ class Commands:
             if command.is_alias(alias):
                 return command
 
+    def add_before_commands(self, f):
+        self._before_commands.add(f)
+        return f
+
+    def add_after_commands(self, f):
+        self._after_commands.add(f)
+        return f
+
     def add(
         self, f, keyword, *aliases,
         override=False,
@@ -195,10 +205,18 @@ class Commands:
             raise UnknownCommandError(command)
 
         try:
-            command.handler(message, *args)
-        except InvalidCommandArgumentsError as e:
-            logging.debug(f"invalid arguments: {command}, {args}. Error: {e}")
-            self._on_invalid_arguments(command, str(e))
+            try:
+                for h in self._before_commands:
+                    h(message, command.keyword, *args)
+                command.handler(message, *args)
+            except InvalidCommandArgumentsError as e:
+                logging.debug(f"invalid arguments: {command}, {args}. Error: {e}")
+                self._on_invalid_arguments(command, str(e))
+                raise e
+            except Exception as e:
+                logging.debug(f"something went wrong: {command}, {args}. Error: {e}")
+                self._on_fail(command, str(e))
+                raise e
         except Exception as e:
-            logging.debug(f"something went wrong: {command}, {args}. Error: {e}")
-            self._on_fail(command, str(e))
+            for h in self._after_commands:
+                h(e, message, command.keyword, *args)

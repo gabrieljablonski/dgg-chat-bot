@@ -96,23 +96,24 @@ def roll(expr):
     The expression format is as follows: "<N>d<P>+<B>",
     in which <N> is the amount of dice to roll, <P> is the die size, 
     and <B> is the base amount to add (or subtract)
-    (if you know regular expressions: "(\\d+)d(\\d+)([+-]\\d+)?").
+    (if you know regular expressions: "^(\\d+)d(\\d+)([+-]\\d+)?$").
     <N> cannot be higher than 20, and <B> is optional.
+    Spaces in <expr> are ignored.
     Examples: "!roll 3d6", "!roll 5d10+5", "!roll 3d12-2".
     """
-    match = findall(r'(\d+)d(\d+)([+-]\d+)?', expr)
+
+    expr = expr.replace(' ', '')
+    match = findall(r'^(\d+)d(\d+)([+-]\d+)?$', expr)
     if not match:
         raise InvalidCommandArgumentsError('failed to match expression')
 
-    n, p, b = match[0]
-    try:
-        n, p, b = int(n), int(p), int(b or 0)
-    except ValueError:
-        # this shouldn't really ever happen
-        raise InvalidCommandArgumentsError('something weird happened when parsing the expression')
+    n, p, b = map(lambda i: int(i or 0), match[0])
 
-    if 0 > n > 20 or p <= 0:
-        raise InvalidCommandArgumentsError('<N> must be between 1 and 20.')
+    if n <= 0 or n > 20:
+        raise InvalidCommandArgumentsError('<N> must be between 1 and 20')
+
+    if p <= 0:
+        raise InvalidCommandArgumentsError('<P> must be positive')
 
     rolls = [
         randint(1, p)
@@ -127,6 +128,22 @@ def roll(expr):
     else:
         msg = f"Rolled: {' + '.join(str(r) for r in rolls)}{base} = {sum(rolls) + b}"
     bot.reply(msg)
+
+
+@bot.before_commands
+def before_commands(message: Message, command, *args):
+    print(f"before command {command} invoked with args {args}")
+    print(message)
+
+
+@bot.after_commands
+def after_commands(e: Exception, message: Message, command, *args):
+    print(message)
+    s = 'successfully'
+    s = f"un{s}" if e else s
+    print(f"after command {command} invoked {s} with args {args}")
+    if e:
+        print(f"error: {e}")
 
 
 @bot.chat.on_user_joined

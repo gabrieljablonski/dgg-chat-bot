@@ -177,9 +177,13 @@ message along with other information, and messages have a size limit of 512 char
 
 ## Special Handlers
 
-There are three scenarios worth mentioning: the `help` command; a command with invalid arguments was invoked;
-an unknown command was invoked; a message which didn't start with the command prefix ("!" by default) 
-was received; and a unhandled exception was raised while processing the command. 
+There are a few special scenarios worth mentioning:
+
+ - The `help` command.
+ - A command with invalid arguments was invoked.
+ - An unknown command was invoked.
+ - A message which didn't start with the command prefix ("!" by default) was received.
+ - A unhandled exception was raised while processing the command.
 
 All of them have default implementations ([which can be reviewed here](./dgg_chat_bot/_dgg_chat_bot.py#L56)), 
 so implementing them is not necessary.
@@ -187,8 +191,12 @@ so implementing them is not necessary.
 As [described before](#registering-commands), use the `override` option of the `on_command()` decorator to 
 implement a custom `help` command. 
 
-As for the other three handlers, use the respective decorators: `on_invalid_arguments()`,
-`on_unknown_command()`, and `on_generic_message()`.
+As for the other handlers, use the respective decorators: `on_invalid_arguments()`,
+`on_unknown_command()`, `on_generic_message()`, and `on_fail()`.
+
+Also, you can user the `before_commands()` and `after_commands()` to define handlers that
+are called before and after every command. The expected signature for these functions
+can be seen in the [`example.py`](./example.py#133) file.
 
 ## Replying To Messages
 

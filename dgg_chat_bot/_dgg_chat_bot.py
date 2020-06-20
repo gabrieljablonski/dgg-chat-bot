@@ -80,7 +80,7 @@ class DGGChatBot:
 
         @self.on_unknown_command
         def on_unknown_command(command):
-            msg = """Sorry, I don't know that one 🤔. Try "{self.command_prefix}help"."""
+            msg = f"""Sorry, I don't know that one 🤔. Try "{self.command_prefix}help"."""
             self.reply(msg)
 
         @self.on_regular_message
@@ -132,6 +132,12 @@ class DGGChatBot:
     def on_fail(self, f):
         self._commands.on_fail = f
         return f
+
+    def before_commands(self, f):
+        return self._commands.add_before_commands(f)
+
+    def after_commands(self, f):
+        return self._commands.add_after_commands(f)
 
     @parametrized_decorator_method
     def on_command(
