@@ -52,7 +52,7 @@ class DGGChatBot:
         return self._chat
 
     def _setup_default_commands(self):
-        @self.on_command('help', 'h', 'commands')
+        @self.on_command('help', 'h', 'commands', optional_args=True)
         def on_help(cmd):
             """
             The command you're using! 
@@ -143,10 +143,9 @@ class DGGChatBot:
         Use sparingly, since you're likely to get throttled.
         """
         for m in messages:
-            self.reply(m, False)
-        self._last_whisper_received = None
+            self.reply(m)
 
-    def reply(self, message, clear_last_whisper=True):
+    def reply(self, message):
         """
         Replies to the last whisper received.
         """
@@ -154,6 +153,3 @@ class DGGChatBot:
             raise InvalidMessageError(message)
         user = self._last_whisper_received.user.nick
         self._chat.send_whisper(user, message)
-
-        if clear_last_whisper:
-            self._last_whisper_received = None

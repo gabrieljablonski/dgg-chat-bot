@@ -1,3 +1,195 @@
-# dgg-chat-bot
+# DGG Chat Bot
 
-Build chat bots for the destiny.gg chat
+A framework for building chat bots for the destiny.gg chat. Built with the 
+[`dgg-chat`](https://github.com/gabrieljablonski/dgg-chat) package. The framework 
+allows you to register commands for when a user whispers you, so you can then reply with something useful.
+
+## Installing
+
+This package is available via pip!
+
+```sh
+pip install dgg-chat-bot
+```
+
+A (very) minimal working example (more details below):
+
+```python
+from dgg_chat_bot import DGGChatBot
+
+bot = DGGChatBot("<dgg auth token>")
+
+@bot.on_command('helloworld')
+def hello_world():
+    bot.reply('Hello World!')
+
+bot.run_forever()
+```
+
+## How To Use
+
+The `DGGChatBot` class runs the main event loop. It parses messages users sent to you for a command 
+and invokes any functions registered to that command. Registering a command can be done with the 
+`DGGChatBot().on_command()` decorator.
+
+As it is with the `dgg_chat` package, all handlers are called synchronously, that is, a handler 
+will only be called after the previous one finished its work. If you want to do time intensive tasks,
+the asynchronous aspect has to be done manually. Native asynchronous support might be implemented in the future.
+
+A more complete example can be found in the [`example.py`](./example.py) file.
+
+## Registering Commands
+
+When using the `on_command()` decorator, the first argument will be the keyword associated
+with that command, followed by any number of aliases. There's also the `override` and `optional_args`, 
+arguments explained further on.
+
+It is enforced that the same alias cannot be used for multiple commands. Unless you set 
+`override` to `True`, keywords also cannot be reused. `override` is specially useful to 
+set your own `help` command, in case you don't like the [default one](./dgg_chat_bot/_dgg_chat_bot.py#L56).
+
+```python
+@bot.on_command('command', 'alias1', 'alias2')
+def on_command():
+    ...
+
+@bot.on_command('help', 'h', override=True)
+def custom_on_help():
+    ...
+```
+
+### Defining A Command Handler
+
+Command handlers can have any number of arguments. Arguments are defined as each
+word that follows the command keyword in the message received, separated by spaces.
+If the handler defines no arguments, everything after the keyword is ignored.
+Example:
+
+```python
+@bot.on_command('command')
+def on_command(arg1, arg2):
+    # user invokes "!command abc 123"
+    # arg1 = 'abc', arg2 = '123'
+```
+
+In case the command is invoked with more arguments than defined, all exceeding words
+are grouped as the last argument. In case arguments sent are less than expected, and
+`optional_args` is `True` (default value), missing arguments are received as empty 
+(`''` or `0` for number arguments, as explained further on). If `optional_args` is set
+to `False`, `InvalidCommandArgumentsError` exception is raised before the handler is 
+called, and the `on_invalid_arguments()` special handler is called, which is explained 
+further on. Examples:
+
+```python
+@bot.on_command('command')
+def on_command(arg1, arg2, multi_word_arg):
+    # user invokes "!command arg1"
+    # arg1 = 'arg1', other args equal to ''
+    #
+    # user invokes "!command 1 2 3 4 5 6"
+    # arg1 = '1', arg2 = '2', and multi_word_arg = '3 4 5 6'
+
+@bot.on_other_command('othercommand', optional_args=False)
+def on_other_command(arg1, arg2):
+    # user invokes "!othercommand"
+    # `InvalidCommandArgumentsError` is raised, and `on_invalid_arguments()` is called instead
+```
+
+#### Typed Arguments
+
+You can also set arguments to expect specific types using [annotations](https://realpython.com/lessons/annotations/), 
+specially useful when you want an argument to be an `int` or `float` (arguments are `str` by default). 
+If the command is invoked using arguments of wrong type, `InvalidCommandArgumentsError` is raised and 
+`on_invalid_arguments()` is called. The `Optional` annotation from the `typing` package can be used in conjunction
+with `optional_args` to selectively enforce certain arguments. Default values can also be set as you'd expect.
+Examples:
+
+```python
+@bot.on_command('typedcommand')
+def typed_command(str_arg, int_arg: int, float_arg: float):
+    # user invokes "!typedcommand 123 123 123.0"
+    # str_arg = '123', int_arg = 123, and float_arg = 123.0
+    #
+    # user invokes "!typedcommand a b c"
+    # `InvalidCommandArgumentsError` is raised, and `on_invalid_arguments()` is called instead
+
+from typing import Optional
+
+@bot.on_command('optionalcommand', optional_args=False)
+def optional_command(required, optional: Optional[int] = 5):
+    # user invoked "!optionalcommand abc 123
+    # required = 'abc', optional = 123
+    #
+    # user invoked "!optionalcommand abc
+    # required = 'abc', optional = 5 (would be 0 if no default were set)
+    #
+    # user invoked "!optionalcommand
+    # `InvalidCommandArgumentsError` is raised, and `on_invalid_arguments()` is called instead
+```
+
+The raw message received can also be retrieved by annotating the last argument with the
+`Message` type. This message will be of type `Whisper` as defined in the 
+[`dgg_chat`](https://github.com/gabrieljablonski/dgg-chat/blob/master/dgg_chat/messages/_messages.py#L100) package.
+The available attributes are: 
+ - `user`: Of type [`ChatUser`](https://github.com/gabrieljablonski/dgg-chat/blob/master/dgg_chat/messages/_messages.py#L6), contains the user's `nick` and their chat `features`.
+ - `message_id`: Message id as defined in the chat backend, rarely useful.
+ - `timestamp`: Unix timestamp for when the message was sent.
+ - `content`: The raw message content the user originally sent.
+
+Example:
+
+```python
+from dgg_chat_bot import Message
+
+@bot.on_command('command')
+def command(arg1, arg2, message: Message):
+    print(message.user.nick)
+```
+
+#### Command Description
+
+One other very important aspect of implementing a command handler is the description.
+The default `help` command implementation uses it to describe to the user what the
+command does and how it's supposed to be used, so don't forget to write it!
+To do so, use the standard way of documenting functions, the [docstrings](https://www.programiz.com/python-programming/docstrings).
+Example:
+
+```python
+@bot.on_command('hello')
+def say_hello(message: Message):
+    """
+    Replies hello to you!
+    Example: "!hello".
+    """
+    bot.reply(f"Hi {message.user.nick}!")
+```
+
+Try to keep the description below 400 characters, since by default it is sent in one 
+message along with other information, and messages have a size limit of 512 characters.
+
+## Special Handlers
+
+There are three scenarios worth mentioning: the `help` command, a command was invoked with invalid arguments,
+an unknown command was invoked, and a message which didn't start with the command prefix ("!" by default) 
+was received. All of them have default implementations ([which can be reviewed here](./dgg_chat_bot/_dgg_chat_bot.py#L56)), 
+so implementing them is not necessary.
+
+As [described before](#registering-commands), use the `override` option of the `on_command()` decorator to 
+implement a custom `help` command. As for the other three handlers, use the respective decorators: `on_invalid_arguments()`,
+`on_unknown_command()`, and `on_generic_message()`.
+
+## Replying To Messages
+
+As shown in the previous examples, the `reply()` function can be used to reply to the user who sent
+the command being processed. There's also `reply_multine()`, which does what the name suggests.
+Expect a small delay (~200-500 ms) between messages, since they'd get throttled otherwise.
+
+## Extra Features
+
+This framework being built on top of the `dgg_chat` package, its functionality is exposed through the `chat`
+attribute of the `DGGChatBot` class. So you can also use decorators to handle different events in chat,
+like with `chat.on_chat_message()` and `chat.on_user_joined()`, as well as get access to the `chat.send_whisper()`
+method, specially useful when you need to send a whisper not as an immediate reply (e.g.: a command that does
+something for a longer amount of time and sends a message when it is done).
+
+For more details, go check out the [`dgg_chat` documentation](https://github.com/gabrieljablonski/dgg-chat).

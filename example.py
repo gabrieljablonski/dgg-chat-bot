@@ -5,18 +5,19 @@ from typing import Optional, Union
 from itertools import islice
 from dotenv import load_dotenv
 
-from dgg_chat.messages import UserJoined, UserQuit, ServedConnections
 from dgg_chat.logging import setup_logger, DEBUG, INFO, WARNING
+from dgg_chat.messages import UserJoined, UserQuit, ServedConnections
 from dgg_chat.overrustle_logs import DGGLogs
 from dgg_chat_bot import DGGChatBot, Message
 from dgg_chat_bot.exceptions import InvalidCommandArgumentsError
 
 
 load_dotenv()
-setup_logger(WARNING)
+setup_logger(INFO)
 
 dgg_auth_token = getenv('DGG_AUTH_TOKEN')
-bot = DGGChatBot(dgg_auth_token)
+extra_help = 'More details at github.com/gabrieljablonski/dgg-chat-bot.'
+bot = DGGChatBot(dgg_auth_token, extra_help=extra_help)
 
 
 users_stalked = {}
@@ -34,7 +35,7 @@ def logs(user, amount: Optional[int] = 5, message: Message = None):
 
     user = user or message.user.nick
     msg = f"Retrieving last {amount} messages sent by {user}..."
-    bot.reply(msg, False)
+    bot.reply(msg)
 
     # this is not an efficient way to do this btw, caching could help
     last_n = [m.original for m in tuple(DGGLogs.get_user_logs(user))[-amount:]]
@@ -117,7 +118,10 @@ def roll(expr):
     sign = '-' if b < 0 else '+'
     base = f" {sign} {abs(b)}*" if b else ''
 
-    msg = f"Rolled: {' + '.join(str(r) for r in rolls)}{base} = {sum(rolls) + b}"
+    if n == 1 and not b:
+        msg = f"Rolled: {rolls[0]}"
+    else:
+        msg = f"Rolled: {' + '.join(str(r) for r in rolls)}{base} = {sum(rolls) + b}"
     bot.reply(msg)
 
 
