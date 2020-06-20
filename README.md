@@ -178,8 +178,10 @@ message along with other information, and messages have a size limit of 512 char
 ## Special Handlers
 
 There are three scenarios worth mentioning: the `help` command; a command with invalid arguments was invoked;
-an unknown command was invoked; and a message which didn't start with the command prefix ("!" by default) 
-was received. All of them have default implementations ([which can be reviewed here](./dgg_chat_bot/_dgg_chat_bot.py#L56)), 
+an unknown command was invoked; a message which didn't start with the command prefix ("!" by default) 
+was received; and a unhandled exception was raised while processing the command. 
+
+All of them have default implementations ([which can be reviewed here](./dgg_chat_bot/_dgg_chat_bot.py#L56)), 
 so implementing them is not necessary.
 
 As [described before](#registering-commands), use the `override` option of the `on_command()` decorator to 

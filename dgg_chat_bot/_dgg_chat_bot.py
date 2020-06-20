@@ -95,6 +95,12 @@ class DGGChatBot:
             msg = f"""I don't think this you how you use that 🤔.{error_message} Try "{self.command_prefix}help {keyword}" for more info."""
             self.reply(msg)
 
+        @self.on_fail
+        def on_fail(command, error_message=''):
+            error_message = f" Error message: {error_message}." if error_message else ''
+            msg = f"""Something went wrong while processing your command.{error_message}"""
+            self.reply(msg)
+
     def _setup_chat_handlers(self):
         # @self._chat.on_chat_message
         @self._chat.on_whisper
@@ -121,6 +127,10 @@ class DGGChatBot:
 
     def on_invalid_arguments(self, f):
         self._commands.on_invalid_arguments = f
+        return f
+
+    def on_fail(self, f):
+        self._commands.on_fail = f
         return f
 
     @parametrized_decorator_method

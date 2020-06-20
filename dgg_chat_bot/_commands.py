@@ -110,6 +110,7 @@ class Commands:
         self._on_regular_message: Callable = None
         self._on_unknown_command: Callable = None
         self._on_invalid_arguments: Callable = None
+        self._on_fail: Callable = None
 
     @property
     def on_regular_message(self):
@@ -137,6 +138,15 @@ class Commands:
     def on_invalid_arguments(self, f):
         # just in case restrictions are needed in the future
         self._on_invalid_arguments = f
+
+    @property
+    def on_fail(self):
+        return self._on_fail
+
+    @on_fail.setter
+    def on_fail(self, f):
+        # just in case restrictions are needed in the future
+        self._on_fail = f
 
     @property
     def all_aliases(self):
@@ -187,5 +197,8 @@ class Commands:
         try:
             command.handler(message, *args)
         except InvalidCommandArgumentsError as e:
-            logging.debug(f"invalid arguments: {command}, {args}")
+            logging.debug(f"invalid arguments: {command}, {args}. Error: {e}")
             self._on_invalid_arguments(command, str(e))
+        except Exception as e:
+            logging.debug(f"something went wrong: {command}, {args}. Error: {e}")
+            self._on_fail(command, str(e))
