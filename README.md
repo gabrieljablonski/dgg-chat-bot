@@ -183,7 +183,7 @@ There are a few special scenarios worth mentioning:
  - A command with invalid arguments was invoked.
  - An unknown command was invoked.
  - A message which didn't start with the command prefix ("!" by default) was received.
- - A unhandled exception was raised while processing the command.
+ - An unhandled exception was raised while processing the command.
 
 All of them have default implementations ([which can be reviewed here](./dgg_chat_bot/_dgg_chat_bot.py#L56)), 
 so implementing them is not necessary.
