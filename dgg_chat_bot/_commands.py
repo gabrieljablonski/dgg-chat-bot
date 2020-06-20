@@ -219,4 +219,4 @@ class Commands:
                 raise e
         except Exception as e:
             for h in self._after_commands:
-                h(e, message, command.keyword, *args)
+                h(message, e, command.keyword, *args)

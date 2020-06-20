@@ -137,7 +137,7 @@ def before_commands(message: Message, command, *args):
 
 
 @bot.after_commands
-def after_commands(e: Exception, message: Message, command, *args):
+def after_commands(message: Message, e: Exception, command, *args):
     print(message)
     s = 'successfully'
     s = f"un{s}" if e else s
