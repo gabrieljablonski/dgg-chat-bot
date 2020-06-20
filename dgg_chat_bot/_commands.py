@@ -204,6 +204,7 @@ class Commands:
                 return self._on_unknown_command(keyword)
             raise UnknownCommandError(command)
 
+        exc = None
         try:
             try:
                 for h in self._before_commands:
@@ -218,5 +219,7 @@ class Commands:
                 self._on_fail(command, str(e))
                 raise e
         except Exception as e:
+            exc = e
+        finally:
             for h in self._after_commands:
-                h(message, e, command.keyword, *args)
+                h(message, exc, command.keyword, *args)
