@@ -5,14 +5,14 @@ from dgg_chat.messages import ChatMessage, Whisper, EventTypes
 from .exceptions import (
     CommandDescriptionTooLongError,
     DuplicateCommandError,
-    InvalidMessageError, 
+    InvalidMessageError,
     InvalidCommandError,
     InvalidCommandArgumentsError,
     UnknownCommandError,
 )
 from ._utils import (
-    get_arity, 
-    sanitize_docs, 
+    get_arity,
+    sanitize_docs,
     call_with_typed_args,
     last_argument_is_of_type,
 )
@@ -50,7 +50,7 @@ class Handler:
             args.extend('' for _ in range(diff))
 
         if len(args) > actual_arity:
-            # extra arguments are clumped as the last one 
+            # extra arguments are clumped as the last one
             # (second to last if expects raw message)
             split = actual_arity - 1
             args, remaining = args[:split], ' '.join(args[split:])
@@ -154,14 +154,14 @@ class Commands:
                 return command
 
     def add(
-        self, f, keyword, *aliases, 
+        self, f, keyword, *aliases,
         override=False,
         optional_args=False,
     ):
         for alias in aliases:
             if self.get_root(alias):
                 raise DuplicateCommandError(alias)
-        
+
         if self.get_root(keyword) and not override:
             raise DuplicateCommandError(keyword)
 

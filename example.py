@@ -51,7 +51,9 @@ def stalk(stalked, message: Message):
     """
 
     users_stalked.setdefault(stalked.lower(), set()).add(message.user.nick)
-    bot.reply(f"All set! Next time {stalked} joins or leaves the chat I'll let you know.")
+    bot.reply(
+        f"All set! Next time {stalked} joins or leaves the chat I'll let you know."
+    )
 
 
 @bot.on_command('unstalk')
@@ -101,7 +103,7 @@ def roll(expr):
     match = findall(r'(\d+)d(\d+)([+-]\d+)?', expr)
     if not match:
         raise InvalidCommandArgumentsError(expr)
-    
+
     n, p, b = match[0]
     try:
         n, p, b = int(n), int(p), int(b or 0)

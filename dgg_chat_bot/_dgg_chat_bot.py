@@ -121,7 +121,7 @@ class DGGChatBot:
 
     @parametrized_decorator_method
     def on_command(
-        self, f, keyword, *aliases, 
+        self, f, keyword, *aliases,
         override=False,
         optional_args=False,
     ):
@@ -131,8 +131,8 @@ class DGGChatBot:
             )
 
         self._commands.add(
-            f, keyword, *aliases, 
-            override=override, 
+            f, keyword, *aliases,
+            override=override,
             optional_args=optional_args
         )
         return f

@@ -16,7 +16,7 @@ def parametrized_decorator_method(decorator):
     Meta decorator for cleanly creating decorators that accept parameters.
     Adapted from https://stackoverflow.com/a/26151604/ to use on methods.
     """
-    
+
     @wraps(decorator)
     def layer(self, *args, **kwargs):
         def apply(f):

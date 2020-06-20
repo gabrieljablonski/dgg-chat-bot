@@ -25,6 +25,7 @@ class UnknownCommandError(Exception):
     Raised when the command is not recognized.
     """
 
+
 class InvalidCommandArgumentsError(Exception):
     """
     Raised when the arguments used for the command were invalid.
