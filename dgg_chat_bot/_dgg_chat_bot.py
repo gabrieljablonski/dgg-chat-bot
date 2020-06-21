@@ -8,7 +8,7 @@ from ._utils import parametrized_decorator_method, enclose
 
 
 class DGGChatBot:
-    def __init__(self, auth_token=None, command_prefix='!', extra_help=''):
+    def __init__(self, auth_token=None, command_prefix='!', extra_help='', greeting=''):
         """
         Parameters
         ----------
@@ -26,11 +26,18 @@ class DGGChatBot:
         `extra_help` : `str`
 
             extra details to be put at the end of the default help function reply.
+
+        `greeting` : `str`
+
+            the reply sent back when using the default `on_generic_message()` handler.
+            use `{user}` inside the string to reference the user's nick.
+            a reference to the `help` command is added at the end by default.
         """
         self._auth_token = auth_token
         self.command_prefix = command_prefix
         self.extra_help = extra_help
         self._last_whisper_received = None
+        self.greeting = greeting or "Hey, {user}! I'm a bot 🤖 *beep* *boop*."
 
         self._commands = Commands(command_prefix)
 
@@ -85,7 +92,7 @@ class DGGChatBot:
 
         @self.on_regular_message
         def on_regular_message(message: Message):
-            msg = f"""Hey, {message.user.nick}! I'm a bot 🤖 *beep* *boop*. To check what I can do, try "{self.command_prefix}help"."""
+            msg = f'{self.greeting.format(user=message.user.nick)} To check everything I can do, try "{self.command_prefix}help".'
             self.reply(msg)
 
         @self.on_invalid_arguments
