@@ -211,11 +211,15 @@ class Commands:
                     h(message, command.keyword, *args)
                 command.handler(message, *args)
             except InvalidCommandArgumentsError as e:
-                logging.debug(f"invalid arguments: {command}, {args}. Error: {e}")
+                logging.debug(
+                    f"invalid arguments: {command}, {args}. Error: {e}"
+                )
                 self._on_invalid_arguments(command, str(e))
                 raise e
             except Exception as e:
-                logging.debug(f"something went wrong: {command}, {args}. Error: {e}")
+                logging.debug(
+                    f"something went wrong: {command}, {args}. Error: {e}"
+                )
                 self._on_fail(command, str(e))
                 raise e
         except Exception as e:
