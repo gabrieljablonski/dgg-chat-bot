@@ -76,16 +76,16 @@ def on_command(arg1, arg2):
 
 In case the command is invoked with more arguments than defined, all exceeding words are grouped as the last argument. 
 
-In case arguments received are less than expected, and `optional_args` is `True` (default value), 
-missing arguments are received as empty (`''` or `0` for numeric arguments, as explained later). 
-
-If `optional_args` is set to `False`, `InvalidCommandArgumentsError` exception is raised, 
+If `optional_args` is set to `False` (default value), `InvalidCommandArgumentsError` exception is raised, 
 and the `on_invalid_arguments()` special handler is called instead, which is explained further on. 
+
+In case arguments received are less than expected, and `optional_args` is `True`, missing arguments are 
+received as empty value (`''` or `0` for numeric arguments, as explained later). 
 
 Examples:
 
 ```python
-@bot.on_command('command')
+@bot.on_command('command', optional_args=True)
 def on_command(arg1, arg2, multi_word_arg):
     # user invokes "!command arg1"
     # arg1 = 'arg1', other args equal to ''
@@ -93,7 +93,7 @@ def on_command(arg1, arg2, multi_word_arg):
     # user invokes "!command 1 2 3 4 5 6"
     # arg1 = '1', arg2 = '2', and multi_word_arg = '3 4 5 6'
 
-@bot.on_other_command('othercommand', optional_args=False)
+@bot.on_other_command('othercommand')
 def on_other_command(arg1, arg2):
     # user invokes "!othercommand"
     # `InvalidCommandArgumentsError` is raised, and `on_invalid_arguments()` is called instead
@@ -107,8 +107,9 @@ specially useful when you want an argument to be an `int` or `float` (arguments 
 If the command is invoked using arguments of wrong type, `InvalidCommandArgumentsError` is raised and 
 `on_invalid_arguments()` is called. 
 
-The `Optional` annotation from the `typing` package can be used in conjunction with `optional_args` to 
-selectively enforce certain arguments. Default values can also be set as you'd expect.
+The `Optional` annotation from the `typing` package can be used to selectively enforce certain arguments,
+instead of all of them being either optional or not when using `optional_args`. 
+Default values can also be set as you'd expect.
 
 Examples:
 
@@ -123,7 +124,7 @@ def typed_command(str_arg, int_arg: int, float_arg: float):
 
 from typing import Optional
 
-@bot.on_command('optionalcommand', optional_args=False)
+@bot.on_command('optionalcommand')
 def optional_command(required, optional: Optional[int] = 5):
     # user invoked "!optionalcommand abc 123
     # required = 'abc', optional = 123
