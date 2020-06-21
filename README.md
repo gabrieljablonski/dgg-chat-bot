@@ -4,7 +4,7 @@ A framework for building chat bots for the [destiny.gg](https://destiny.gg) chat
 commands for when a user whispers you, so you can then reply with something useful.
 Built with the [`dgg-chat`](https://github.com/gabrieljablonski/dgg-chat) package.
 
-In case you want a more in-depth example, check out the [reminde me bot](https://github.com/gabrieljablonski/dgg-remind-me).
+In case you want a more in-depth example, check out the [remind me bot](https://github.com/gabrieljablonski/dgg-remind-me).
 
 ## Installing
 
