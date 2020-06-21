@@ -196,7 +196,7 @@ implement a custom `help` command.
 As for the other handlers, use the respective decorators: `on_invalid_arguments()`,
 `on_unknown_command()`, `on_generic_message()`, and `on_fail()`.
 
-Also, you can user the `before_commands()` and `after_commands()` to define handlers that
+Also, you can user the `before_every_command()` and `after_every_command()` to define handlers that
 are called before and after every command. The expected signature for these functions
 can be seen in the [`example.py`](./example.py#L133) file.
 

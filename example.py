@@ -130,14 +130,14 @@ def roll(expr):
     bot.reply(msg)
 
 
-@bot.before_commands
-def before_commands(message: Message, command, *args):
+@bot.before_every_command
+def before_every_command(message: Message, command, *args):
     print(f"before command {command} invoked with args {args}")
     print(message)
 
 
-@bot.after_commands
-def after_commands(message: Message, e: Exception, command, *args):
+@bot.after_every_command
+def after_every_command(message: Message, e: Exception, command, *args):
     print(message)
     s = 'successfully'
     s = f"un{s}" if e else s

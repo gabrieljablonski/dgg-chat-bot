@@ -111,8 +111,8 @@ class Commands:
         self._on_unknown_command: Callable = None
         self._on_invalid_arguments: Callable = None
         self._on_fail: Callable = None
-        self._before_commands: Set[Callable] = set()
-        self._after_commands: Set[Callable] = set()
+        self._before_every_command: Set[Callable] = set()
+        self._after_every_command: Set[Callable] = set()
 
     @property
     def on_regular_message(self):
@@ -165,12 +165,12 @@ class Commands:
             if command.is_alias(alias):
                 return command
 
-    def add_before_commands(self, f):
-        self._before_commands.add(f)
+    def add_before_every_command(self, f):
+        self._before_every_command.add(f)
         return f
 
-    def add_after_commands(self, f):
-        self._after_commands.add(f)
+    def add_after_every_command(self, f):
+        self._after_every_command.add(f)
         return f
 
     def add(
@@ -207,7 +207,7 @@ class Commands:
         exc = None
         try:
             try:
-                for h in self._before_commands:
+                for h in self._before_every_command:
                     h(message, command.keyword, *args)
                 command.handler(message, *args)
             except InvalidCommandArgumentsError as e:
@@ -221,5 +221,5 @@ class Commands:
         except Exception as e:
             exc = e
         finally:
-            for h in self._after_commands:
+            for h in self._after_every_command:
                 h(message, exc, command.keyword, *args)

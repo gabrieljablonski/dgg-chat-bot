@@ -133,11 +133,11 @@ class DGGChatBot:
         self._commands.on_fail = f
         return f
 
-    def before_commands(self, f):
-        return self._commands.add_before_commands(f)
+    def before_every_command(self, f):
+        return self._commands.add_before_every_command(f)
 
-    def after_commands(self, f):
-        return self._commands.add_after_commands(f)
+    def after_every_command(self, f):
+        return self._commands.add_after_every_command(f)
 
     @parametrized_decorator_method
     def on_command(
