@@ -30,3 +30,7 @@ class InvalidCommandArgumentsError(Exception):
     """
     Raised when the arguments used for the command were invalid.
     """
+
+
+class HandlerFailedError(Exception):
+    pass

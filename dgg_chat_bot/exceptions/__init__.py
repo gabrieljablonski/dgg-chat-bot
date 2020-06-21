@@ -5,4 +5,5 @@ from ._exceptions import (
     InvalidCommandError,
     InvalidCommandArgumentsError,
     UnknownCommandError,
+    HandlerFailedError,
 )

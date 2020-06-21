@@ -3,6 +3,8 @@ from typing import Callable, Type, Union, _Final
 from inspect import cleandoc, signature
 from functools import wraps
 
+from .exceptions import HandlerFailedError
+
 
 def sanitize_docs(docs):
     return cleandoc(docs).replace('\n', ' ')
@@ -70,4 +72,7 @@ def call_with_typed_args(f, *args, optional_args=False):
             elif arg == maxsize:
                 arg = 0
         coerced.append(arg)
-    return f(*coerced)
+    try:
+        return f(*coerced)
+    except Exception as e:
+        raise HandlerFailedError(e)

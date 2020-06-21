@@ -80,6 +80,7 @@ class DGGChatBot:
 
         # setting manually since formatting is needed
         on_help.__doc__ = f"""
+        "!help [<command>]".
         The command you're using! 
         Use it to get info about available commands.
         Examples: "{self.command_prefix}help", "{self.command_prefix}help <command>".
