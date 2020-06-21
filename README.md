@@ -8,7 +8,7 @@ In case you want a more in-depth example, check out the [remind me bot](https://
 
 ## Installing
 
-This package is available via pip!
+This package is available via pip (requires python 3.8).
 
 ```sh
 pip install dgg-chat-bot
