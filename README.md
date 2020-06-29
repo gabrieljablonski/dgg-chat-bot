@@ -225,3 +225,9 @@ to send a whisper not as an immediate reply (e.g.: a command that does something
 amount of time and sends a message when it is done).
 
 For more details, go check out the [`dgg-chat` documentation](https://github.com/gabrieljablonski/dgg-chat).
+
+## TODO
+
+- Support regex for raising invalid args error automatically.
+- Maybe use `multiprocessing` instead of `threading` for message sending?
+- Improve the way ws error messages are handled (maybe include message associated with it, if any?).
