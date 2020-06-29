@@ -230,4 +230,4 @@ For more details, go check out the [`dgg-chat` documentation](https://github.com
 
 - Support regex for raising invalid args error automatically.
 - Maybe use `multiprocessing` instead of `threading` for message sending?
-- Improve the way ws error messages are handled (maybe include message associated with it, if any?).
+- Improve the way **business logic** error messages are handled (maybe include message associated with it, if any?).
