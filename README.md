@@ -126,7 +126,7 @@ from typing import Optional
 
 @bot.on_command('optionalcommand')
 def optional_command(required, optional: Optional[int] = 5):
-    # user invoked "!optionalcommand abc 123
+    # user invoked "!optionalcommand abc 123"
     # required = 'abc', optional = 123
     #
     # user invoked "!optionalcommand abc
