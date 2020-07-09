@@ -11,7 +11,7 @@ def sanitize_docs(docs):
 
 
 def enclose(strings, char):
-    return [f"{char}{s}{char}" for s in strings]
+    return [s.join(char*2) for s in strings]
 
 
 def parametrized_decorator_method(decorator):
