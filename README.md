@@ -48,7 +48,7 @@ arguments explained later on.
 
 It is enforced that the same alias cannot be used for multiple commands. Unless you set 
 `override` to `True`, keywords also cannot be reused. `override` is specially useful to 
-define your own `help` command, in case you don't like the [default one](./dgg_chat_bot/_dgg_chat_bot.py#L56).
+define your own `help` command, in case you don't like the [default one](./dgg_chat_bot/_dgg_chat_bot.py#L61).
 
 ```python
 @bot.on_command('command', 'alias1', 'alias2')
@@ -216,7 +216,7 @@ Check the [authentication section](https://github.com/gabrieljablonski/dgg-chat#
 
 ## Extra Features
 
-This framework being built on top of the `dgg-chat` package, its functionality is exposed through the `chat`
+As this framework is built on top of the `dgg-chat` package, features are exposed through the `chat`
 attribute of the `DGGChatBot` class. So you can also use decorators to handle different events in chat,
 like with `chat.on_chat_message()` and `chat.on_user_joined()`.
 
