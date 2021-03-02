@@ -1,3 +1,5 @@
+# DEPRECATED :(
+
 # DGG Chat Bot
 
 A framework for building chat bots for the [destiny.gg](https://destiny.gg) chat. It allows you to register 
